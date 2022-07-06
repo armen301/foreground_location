@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.location.foreground">
+
+    <application
+        android:label="@string/app_name">
+        <activity
+            android:name=".Main2Activity"
+            android:exported="true"
+
+            android:label="@string/title_activity_main2"
+            android:theme="@style/Theme.ForegroundLocation.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
