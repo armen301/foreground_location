@@ -20,7 +20,7 @@ import com.location.foreground_location.api.LocationErrorListener
 import com.location.foreground_location.api.LocationUpdateListener
 import kotlin.properties.Delegates
 
-internal class ForegroundLocationService : Service() {
+class ForegroundLocationService : Service() {
 
     private val tag = ForegroundLocationService::class.simpleName
 
