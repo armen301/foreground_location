@@ -1,4 +1,4 @@
-package com.location.foreground_location.api
+package com.location.foreground_location
 
 /**
  * This listener is used to track the errors during fetching location updates

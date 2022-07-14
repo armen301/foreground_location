@@ -1,4 +1,4 @@
-package com.location.foreground_location.api
+package com.location.foreground_location
 
 class Location(
     val latitude: Double,

@@ -1,4 +1,4 @@
-package com.location.foreground_location.internal
+package com.location.foreground_location
 
 import android.Manifest.permission
 import android.location.Location
@@ -6,7 +6,7 @@ import android.location.LocationManager
 import androidx.annotation.RequiresPermission
 import androidx.core.location.LocationListenerCompat
 
-internal class LocationRepository(
+class LocationRepository(
     private val locationManager: LocationManager?,
     private val updateListener: LocationChangeListener,
 ) : LocationListenerCompat {
@@ -38,7 +38,7 @@ internal class LocationRepository(
     }
 }
 
-internal interface LocationChangeListener {
+interface LocationChangeListener {
     fun onChange(location: Location)
     fun onError(errorState: ErrorState)
 }

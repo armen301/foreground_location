@@ -1,4 +1,6 @@
-package com.location.foreground_location.api
+package com.location.foreground_location
+
+import com.location.foreground_location.Location
 
 /**
  * This listener is used to track the location changes.

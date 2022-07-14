@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application>
-        <service android:name=".internal.ForegroundLocationService"
+        <service android:name="LocationService"
             android:exported="false"
             android:enabled="true" />
     </application>

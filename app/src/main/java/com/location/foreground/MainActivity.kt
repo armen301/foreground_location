@@ -8,20 +8,20 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.location.foreground.databinding.ActivityMain2Binding
-import com.location.foreground_location.api.LocationService
-import com.location.foreground_location.api.LocationUpdateConfig
-import com.location.foreground_location.api.NotificationConfig
+import com.location.foreground.databinding.ActivityMainBinding
+import com.location.foreground_location.LocationService
+import com.location.foreground_location.LocationUpdateConfig
+import com.location.foreground_location.NotificationConfig
 
-class Main2Activity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMain2Binding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMain2Binding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
@@ -34,24 +34,23 @@ class Main2Activity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
-
-        service = LocationService.init(this, LocationUpdateConfig(5000), NotificationConfig(), {
-            Toast.makeText(this,"lat:${it.latitude}, long:${it.longitude}", Toast.LENGTH_SHORT).show()
-        }){
-            Toast.makeText(this, "error:$it", Toast.LENGTH_SHORT).show()
-        }
     }
-
-    lateinit var service: LocationService
 
     override fun onStart() {
         super.onStart()
-        service.stop()
+        LocationService.stop()
     }
 
     override fun onStop() {
         super.onStop()
-        service.start()
+        if (isFinishing) {
+            return
+        }
+        LocationService.start(this, LocationUpdateConfig(5000), NotificationConfig(), {
+            Toast.makeText(this,"lat:${it.latitude}, long:${it.longitude}", Toast.LENGTH_SHORT).show()
+        }){
+            Toast.makeText(this, "error:$it", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -1,4 +1,4 @@
-package com.location.foreground_location.api
+package com.location.foreground_location
 
 import androidx.annotation.DrawableRes
 import com.location.foreground_location.R
