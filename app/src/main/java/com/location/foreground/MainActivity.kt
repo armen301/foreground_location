@@ -1,7 +1,6 @@
 package com.location.foreground
 
 import android.os.Bundle
-import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -46,11 +45,7 @@ class MainActivity : AppCompatActivity() {
         if (isFinishing) {
             return
         }
-        LocationService.start(this, LocationUpdateConfig(5000), NotificationConfig(), {
-            Toast.makeText(this,"lat:${it.latitude}, long:${it.longitude}", Toast.LENGTH_SHORT).show()
-        }){
-            Toast.makeText(this, "error:$it", Toast.LENGTH_SHORT).show()
-        }
+        LocationService.start(this, LocationUpdateConfig(5000), NotificationConfig(), listOf(listOf(37.65, -122.06)), 30.0)
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -15,4 +15,6 @@ data class NotificationConfig @JvmOverloads constructor(
     @DrawableRes val iconResource: Int = R.drawable.ic_location,
     val contentTitle: String? = null,
     val contentText: String? = null,
+    val foundDistanceTitle: String = "title",
+    val foundDistanceText: String = "text",
 )

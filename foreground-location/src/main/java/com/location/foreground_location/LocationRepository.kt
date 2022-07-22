@@ -11,9 +11,6 @@ class LocationRepository(
     private val updateListener: LocationChangeListener,
 ) : LocationListenerCompat {
 
-    var lastLocation: Location? = null
-        private set
-
     @RequiresPermission(anyOf = [permission.ACCESS_COARSE_LOCATION, permission.ACCESS_FINE_LOCATION])
     fun startLocationUpdates(interval: Long) {
         locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, interval, 0f, this)
@@ -25,7 +22,6 @@ class LocationRepository(
 
     override fun onLocationChanged(location: Location) {
         updateListener.onChange(location)
-        lastLocation = location
     }
 
     override fun onProviderDisabled(provider: String) {
