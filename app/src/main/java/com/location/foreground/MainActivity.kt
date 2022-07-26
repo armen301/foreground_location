@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         if (isFinishing) {
             return
         }
-        LocationService.start(this, LocationUpdateConfig(5000), NotificationConfig(), listOf(listOf(37.65, -122.06)), 30.0)
+        LocationService.start(this, LocationUpdateConfig(5000), NotificationConfig(), "{\"locations\":[{\"lat\":37.65,\"lng\":-122.06}]}", 30.0)
     }
 
     override fun onSupportNavigateUp(): Boolean {

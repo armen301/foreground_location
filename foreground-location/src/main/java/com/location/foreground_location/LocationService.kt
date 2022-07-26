@@ -17,6 +17,8 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.cos
@@ -43,8 +45,6 @@ class LocationService : Service() {
 
         private var locationNotificationContentTitle: String? = null
         private var locationNotificationContentText: String? = null
-        private lateinit var pinNotificationContentTitle: String
-        private lateinit var pinNotificationContentText: String
         private var notificationIcon by Delegates.notNull<Int>()
 
         private var locationRepository: LocationRepository? = null
@@ -54,7 +54,7 @@ class LocationService : Service() {
             activity: Activity,
             locationUpdateConfig: LocationUpdateConfig,
             notificationConfig: NotificationConfig,
-            coordinates: List<List<Double>>,
+            coordinates: String,
             minDistance: Double, // in meters
         ) {
             init(activity, locationUpdateConfig, notificationConfig, coordinates, minDistance)
@@ -90,7 +90,10 @@ class LocationService : Service() {
                                 with(NotificationManagerCompat.from(service!!)) {
                                     createNotificationChannel(NOTIFICATION_CHANNEL_ID_PIN)
                                     // notificationId is a unique int for each notification that you must define
-                                    notify(NOTIFICATION_ID_PIN, buildNotification(NOTIFICATION_CHANNEL_ID_PIN))
+                                    notify(
+                                        NOTIFICATION_ID_PIN,
+                                        buildNotification(NOTIFICATION_CHANNEL_ID_PIN, it.title, it.description)
+                                    )
                                 }
                             }
                         }
@@ -130,18 +133,18 @@ class LocationService : Service() {
             activity: Activity,
             locationUpdateConfig: LocationUpdateConfig,
             notificationConfig: NotificationConfig,
-            coordinates: List<List<Double>>,
+            coordinates: String,
             minDistance: Double,
         ) {
             this.activity = activity
             notificationIcon = notificationConfig.iconResource
             locationNotificationContentTitle = notificationConfig.contentTitle
             locationNotificationContentText = notificationConfig.contentText
-            pinNotificationContentText = notificationConfig.foundDistanceText
-            pinNotificationContentTitle = notificationConfig.foundDistanceTitle
             updateInterval = locationUpdateConfig.updateInterval
-            this.locations = coordinates.map { Location(it[0], it[1]) }
             this.minDistance = minDistance
+
+            val data: Data = Json.decodeFromString(coordinates)
+            this.locations = data.locations
         }
 
         private fun distance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
@@ -167,9 +170,9 @@ class LocationService : Service() {
             return rad * 180 / Math.PI
         }
 
-        private fun showNotification(channelId: String, notificationId: Int) {
-            createNotificationChannel(channelId)
-            service?.startForeground(notificationId, buildNotification(channelId))
+        private fun showNotification() {
+            createNotificationChannel(NOTIFICATION_CHANNEL_ID_LOCATION)
+            service?.startForeground(NOTIFICATION_ID_LOCATION, buildNotification(NOTIFICATION_CHANNEL_ID_LOCATION, getLocationContentTitle(), getLocationContentText()))
         }
 
         private fun createNotificationChannel(channelId: String) {
@@ -184,7 +187,7 @@ class LocationService : Service() {
             }
         }
 
-        private fun buildNotification(channelId: String): Notification {
+        private fun buildNotification(channelId: String, contentTitle: String, contentText: String): Notification {
             // Tapping the notification opens the app.
             val pendingIntent = PendingIntent.getActivity(
                 service,
@@ -198,8 +201,8 @@ class LocationService : Service() {
             val builder = NotificationCompat.Builder(service!!, channelId)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(notificationIcon)
-                .setContentTitle(getContentTitle(channelId))
-                .setContentText(getContentText(channelId))
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
                 .setOngoing(true)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -214,20 +217,12 @@ class LocationService : Service() {
             return builder.build()
         }
 
-        private fun getContentTitle(channelId: String): String {
-            if (channelId == NOTIFICATION_CHANNEL_ID_LOCATION) {
-                return if (locationNotificationContentTitle.isNullOrBlank()) "LocationUpdates" else locationNotificationContentTitle!!
-            }
-
-            return pinNotificationContentTitle
+        private fun getLocationContentTitle(): String {
+            return if (locationNotificationContentTitle.isNullOrBlank()) "LocationUpdates" else locationNotificationContentTitle!!
         }
 
-        private fun getContentText(channelId: String): String {
-            if (channelId == NOTIFICATION_CHANNEL_ID_LOCATION) {
-                return if (locationNotificationContentText.isNullOrBlank()) "fetching location" else locationNotificationContentText!!
-            }
-
-            return pinNotificationContentText
+        private fun getLocationContentText(): String {
+            return if (locationNotificationContentText.isNullOrBlank()) "fetching location" else locationNotificationContentText!!
         }
     }
 
@@ -239,7 +234,7 @@ class LocationService : Service() {
         super.onStartCommand(intent, flags, startId)
         service = this
         Toast.makeText(activity, "LocationService onStartCommand()", Toast.LENGTH_SHORT).show()
-        showNotification(NOTIFICATION_CHANNEL_ID_LOCATION, NOTIFICATION_ID_LOCATION)
+        showNotification()
 
         return START_NOT_STICKY
     }
