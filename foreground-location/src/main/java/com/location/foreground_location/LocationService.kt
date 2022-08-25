@@ -67,11 +67,8 @@ class LocationService : Service() {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                Toast.makeText(activity, "LocationService no permission", Toast.LENGTH_SHORT).show()
                 return
             }
-
-            Toast.makeText(activity, "LocationService.start()", Toast.LENGTH_SHORT).show()
 
             activity.startService(Intent(activity, LocationService::class.java))
 
@@ -97,25 +94,11 @@ class LocationService : Service() {
                                 }
                             }
                         }
-
-                        Toast.makeText(
-                            activity,
-                            "LocationService onChange() lat: ${location.latitude} long: ${location.longitude}",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
 
-                    override fun onError(errorState: ErrorState) {
-                        Toast.makeText(
-                            activity,
-                            "LocationService onError() error: ${errorState.ordinal}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    override fun onError(errorState: ErrorState) {}
                 }
             )
-
-            Toast.makeText(activity, "LocationService.start()", Toast.LENGTH_SHORT).show()
 
             locationRepository?.startLocationUpdates(updateInterval)
         }
@@ -125,7 +108,6 @@ class LocationService : Service() {
             activity?.let {
                 locationRepository?.stopLocationUpdates()
                 it.stopService(Intent(it, LocationService::class.java))
-                Toast.makeText(it, "LocationService.stop()", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -233,14 +215,12 @@ class LocationService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         service = this
-        Toast.makeText(activity, "LocationService onStartCommand()", Toast.LENGTH_SHORT).show()
         showNotification()
 
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        Toast.makeText(activity, "LocationService onDestroy()", Toast.LENGTH_SHORT).show()
         locationRepository = null
         activity = null
         service = null
